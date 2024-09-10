@@ -5,22 +5,22 @@ from PIL import Image, ImageDraw, ImageFont
 from transformers import AutoTokenizer, TFBertForMaskedLM
 
 # Pre-trained masked language model
-MODEL = "bert-base-uncased"
+MODEL = "bert-base-uncased" # Escolheu o modelo BERT base uncased
 
 # Number of predictions to generate
-K = 3
+K = 3 # k é o número de palavras que o programa vai sugerir
 
 # Constants for generating attention diagrams
-FONT = ImageFont.truetype("assets/fonts/OpenSans-Regular.ttf", 28)
-GRID_SIZE = 40
-PIXELS_PER_WORD = 200
+FONT = ImageFont.truetype("assets/fonts/OpenSans-Regular.ttf", 28) # Fonte do texto
+GRID_SIZE = 40 # Tamanho da grade, a grade é a matriz de atenção
+PIXELS_PER_WORD = 200 # Pixels por palavra, isso significa que a imagem terá 200 pixels por palavra
 
 
 def main():
-    text = input("Text: ")
+    text = input("Text: ") # recebe o texto do input
 
     # Tokenize input
-    tokenizer = AutoTokenizer.from_pretrained(MODEL)
+    tokenizer = AutoTokenizer.from_pretrained(MODEL) # cria um tokenizador, cria
     inputs = tokenizer(text, return_tensors="tf")
     mask_token_index = get_mask_token_index(tokenizer.mask_token_id, inputs)
     if mask_token_index is None:
@@ -46,9 +46,13 @@ def get_mask_token_index(mask_token_id, inputs):
     `None` if not present in the `inputs`.
     """
     # TODO: Implement this function
-    raise NotImplementedError
-
-
+    
+    input_ids = inputs["input_ids"][0].numpy()
+    # accessing the input_ids, in the position 0 of the tensor
+    for i, token_id in enumerate(input_ids):
+        if token_id == mask_token_id:
+            return i
+    return None
 
 def get_color_for_attention_score(attention_score):
     """
