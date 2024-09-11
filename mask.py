@@ -31,8 +31,8 @@ def main():
     result = model(**inputs, output_attentions=True)
 
     # Generate predictions
-    mask_token_logits = result.logits[0, mask_token_index]
-    top_tokens = tf.math.top_k(mask_token_logits, K).indices.numpy()
+    mask_token_logits = result.logits[0, mask_token_index] # logits são as probabilidades de cada palavra
+    top_tokens = tf.math.top_k(mask_token_logits, K).indices.numpy() # top_k retorna os k maiores valores, indices são os índices dos valores
     for token in top_tokens:
         print(text.replace(tokenizer.mask_token, tokenizer.decode([token])))
 
@@ -52,6 +52,7 @@ def get_mask_token_index(mask_token_id, inputs):
     for i, token_id in enumerate(input_ids):
         if token_id == mask_token_id:
             return i
+        
     return None
 
 def get_color_for_attention_score(attention_score):
@@ -59,8 +60,9 @@ def get_color_for_attention_score(attention_score):
     Return a tuple of three integers representing a shade of gray for the
     given `attention_score`. Each value should be in the range [0, 255].
     """
-    # TODO: Implement this function
-    raise NotImplementedError
+    gray = int(attention_score * 255)
+    return (gray, gray, gray) # verificar round
+    
 
 
 
@@ -74,13 +76,16 @@ def visualize_attentions(tokens, attentions):
     include both the layer number (starting count from 1) and head number
     (starting count from 1).
     """
-    # TODO: Update this function to produce diagrams for all layers and heads.
-    generate_diagram(
-        1,
-        1,
-        tokens,
-        attentions[0][0][0]
-    )
+    # in the attentions returned by the model, we have the attentions for each layer
+    for i, layer in enumerate(attentions):
+        # So if I want to access the attention for the first layer, I would access attentions[0]
+        for j in range(len(layer[0])):
+            # for each layer, we have the attentions for each head
+            # the attention for each head is a matrix with the attention scores
+            generate_diagram(i + 1, j + 1, tokens, layer[0][j].numpy())
+            # head is 
+
+    
 
 
 def generate_diagram(layer_number, head_number, tokens, attention_weights):
