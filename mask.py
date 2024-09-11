@@ -60,7 +60,7 @@ def get_color_for_attention_score(attention_score):
     Return a tuple of three integers representing a shade of gray for the
     given `attention_score`. Each value should be in the range [0, 255].
     """
-    gray = int(attention_score * 255)
+    gray = round(int(attention_score * 255))
     return (gray, gray, gray) # verificar round
     
 
@@ -76,14 +76,9 @@ def visualize_attentions(tokens, attentions):
     include both the layer number (starting count from 1) and head number
     (starting count from 1).
     """
-    # in the attentions returned by the model, we have the attentions for each layer
     for i, layer in enumerate(attentions):
-        # So if I want to access the attention for the first layer, I would access attentions[0]
         for j in range(len(layer[0])):
-            # for each layer, we have the attentions for each head
-            # the attention for each head is a matrix with the attention scores
             generate_diagram(i + 1, j + 1, tokens, layer[0][j].numpy())
-            # head is 
 
     
 
